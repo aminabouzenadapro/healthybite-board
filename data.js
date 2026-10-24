@@ -470,3 +470,67 @@ Object.assign(I18N.ar, {
   focus_ph: "موضوع هذا الأسبوع", lesson_ph: "درس الجلسة", other_tasks: "مهام أخرى",
   open: "فتح", menu: "القائمة", new_task: "مهمة جديدة", saving: "جارٍ الحفظ…",
 });
+
+/* The weekly guide: one instruction per step (Before, the 4 agenda blocks, After). */
+const GUIDE = [
+  { en: "Open this page on the shared screen. Check who does what this week and read last week's handoff, then press Start the session.",
+    fr: "Ouvrez cette page sur l'écran partagé. Regardez qui fait quoi cette semaine et lisez la passation de la semaine dernière, puis appuyez sur Lancer la séance.",
+    ar: "افتحوا هذه الصفحة على الشاشة المشتركة. راجعوا من يفعل ماذا هذا الأسبوع واقرؤوا ملاحظات تسليم الأسبوع الماضي، ثم اضغطوا بدء الجلسة." },
+  { en: "The Coordinator reads what last week's team left. Each pair says in one sentence where they are. Then move on.",
+    fr: "La coordination lit ce que l'équipe précédente a laissé. Chaque binôme dit en une phrase où il en est. Puis on avance.",
+    ar: "يقرأ المنسق ما تركه فريق الأسبوع الماضي. يقول كل ثنائي في جملة واحدة أين وصل. ثم ننتقل." },
+  { en: "Listen to the lesson. One person writes the key points below so the whole team keeps them.",
+    fr: "Écoutez la leçon. Une personne note les points clés ci-dessous pour toute l'équipe.",
+    ar: "استمعوا إلى الدرس. يكتب شخص واحد النقاط الأساسية أدناه ليحتفظ بها الفريق كله." },
+  { en: "Work in your pair on your tasks. Tick each task when it's done and submit what you have to hand in. Never make health claims in captions.",
+    fr: "Travaillez en binôme sur vos tâches. Cochez chaque tâche terminée et rendez vos livrables. Jamais d'allégations santé dans les légendes.",
+    ar: "اعملوا في ثنائيات على مهامكم. أشّروا على كل مهمة منجزة وسلّموا ما عليكم تسليمه. لا ادعاءات صحية أبدًا في التعليقات." },
+  { en: "Each pair shows what they made (2–3 minutes). The Coordinator reviews the deliverables and ticks the end-of-session checklist.",
+    fr: "Chaque binôme montre ce qu'il a fait (2–3 minutes). La coordination valide les livrables et coche la checklist de fin de séance.",
+    ar: "يعرض كل ثنائي ما أنجزه (2–3 دقائق). يراجع المنسق التسليمات ويؤشّر على قائمة نهاية الجلسة." },
+  { en: "Before you leave, the Coordinator writes the handoff for next week's team. Between sessions, the Client & data pair spends about 15 minutes each and logs it here.",
+    fr: "Avant de partir, la coordination écrit la passation pour l'équipe suivante. Entre les séances, le binôme client & données y consacre environ 15 minutes chacun et le note ici.",
+    ar: "قبل المغادرة، يكتب المنسق ملاحظات التسليم لفريق الأسبوع القادم. بين الجلسات، يخصص ثنائي العميل والبيانات حوالي 15 دقيقة لكل واحد ويسجل ذلك هنا." },
+];
+
+const TOUR = [
+  { icon: "sparkle", t: { en: "Welcome to HealthyBite", fr: "Bienvenue sur HealthyBite", ar: "مرحبًا بكم في HealthyBite" },
+    d: { en: "This board walks your team through each of the 7 weeks, one step at a time.", fr: "Ce tableau guide votre équipe à travers les 7 semaines, étape par étape.", ar: "ترافق هذه اللوحة فريقكم خلال الأسابيع السبعة، خطوة بخطوة." } },
+  { icon: "home", t: { en: "Open \"This week\" at every session", fr: "Ouvrez « Cette semaine » à chaque séance", ar: "افتحوا «هذا الأسبوع» في كل جلسة" },
+    d: { en: "Follow the steps: Before → Recap → Lesson → Pair work → Presentation → After. The timer tells you where you are, and Next step moves you on.", fr: "Suivez les étapes : Avant → Récap → Leçon → Binômes → Présentation → Après. Le minuteur indique où vous en êtes, et Étape suivante vous fait avancer.", ar: "اتبعوا الخطوات: قبل ← المراجعة ← الدرس ← العمل في ثنائيات ← العرض ← بعد. يبيّن المؤقت أين أنتم، وزر الخطوة التالية ينقلكم." } },
+  { icon: "listcheck", t: { en: "Tick your tasks, hand in your work", fr: "Cochez vos tâches, rendez votre travail", ar: "أشّروا على مهامكم وسلّموا عملكم" },
+    d: { en: "During pair work you see your own tasks first. Tick them when done and submit deliverables with links and photos.", fr: "Pendant le travail en binôme, vous voyez d'abord vos tâches. Cochez-les et rendez les livrables avec liens et photos.", ar: "أثناء العمل في ثنائيات تظهر مهامك أولًا. أشّر عليها عند الإنجاز وسلّم التسليمات بالروابط والصور." } },
+  { icon: "shield", t: { en: "The Coordinator reviews and hands over", fr: "La coordination valide et passe le relais", ar: "المنسق يراجع ويسلّم" },
+    d: { en: "Roles rotate every week. The week's Coordinator approves deliverables and writes the handoff for the next team.", fr: "Les rôles tournent chaque semaine. La coordination de la semaine valide les livrables et écrit la passation pour l'équipe suivante.", ar: "تتناوب الأدوار كل أسبوع. يعتمد منسق الأسبوع التسليمات ويكتب ملاحظات التسليم للفريق التالي." } },
+];
+
+Object.assign(I18N.en, {
+  nav_guide: "This week", nav_weeks: "All weeks", nav_tasks: "Tasks", more: "More", how_it_works: "How it works",
+  step_before: "Before", step_after: "After", start_the_session: "Start the session", next_step: "Next step", back_to_now: "Back to the current step",
+  now: "Now", you: "You", coordinator_label: "Coordinator", not_started: "Not started", restart: "Restart timer", session_done: "Session finished",
+  handoff_last: "Last week's handoff", first_week: "This is the first week: no handoff yet.", lesson_notes: "Lesson notes",
+  lesson_notes_ph: "Key points from today's lesson…", your_tasks_role: "Your tasks", hand_in: "To hand in this week", other_pairs: "Other pairs",
+  review: "Review", log_add: "Add", log_ph: "What did you do?", between_title: "Between sessions", next_week: "Next week",
+  your_role_next: "Your role next week", week_complete: "This session is finished. See you next week!", pick_name_first: "Pick your name to see your own tasks first.",
+  tour_next: "Next", tour_back: "Back", tour_start: "Pick my name", step_of: "Step {a} of {b}", week_progress: "This week",
+});
+Object.assign(I18N.fr, {
+  nav_guide: "Cette semaine", nav_weeks: "Toutes les semaines", nav_tasks: "Tâches", more: "Plus", how_it_works: "Mode d'emploi",
+  step_before: "Avant", step_after: "Après", start_the_session: "Lancer la séance", next_step: "Étape suivante", back_to_now: "Revenir à l'étape en cours",
+  now: "Maintenant", you: "Toi", coordinator_label: "Coordination", not_started: "Pas commencé", restart: "Relancer le minuteur", session_done: "Séance terminée",
+  handoff_last: "Passation de la semaine dernière", first_week: "C'est la première semaine : pas encore de passation.", lesson_notes: "Notes de la leçon",
+  lesson_notes_ph: "Les points clés de la leçon…", your_tasks_role: "Tes tâches", hand_in: "À rendre cette semaine", other_pairs: "Les autres binômes",
+  review: "Valider", log_add: "Ajouter", log_ph: "Qu'as-tu fait ?", between_title: "Entre les séances", next_week: "Semaine prochaine",
+  your_role_next: "Ton rôle la semaine prochaine", week_complete: "La séance est terminée. À la semaine prochaine !", pick_name_first: "Choisis ton nom pour voir tes tâches en premier.",
+  tour_next: "Suivant", tour_back: "Retour", tour_start: "Choisir mon nom", step_of: "Étape {a} sur {b}", week_progress: "Cette semaine",
+});
+Object.assign(I18N.ar, {
+  nav_guide: "هذا الأسبوع", nav_weeks: "كل الأسابيع", nav_tasks: "المهام", more: "المزيد", how_it_works: "طريقة الاستخدام",
+  step_before: "قبل", step_after: "بعد", start_the_session: "بدء الجلسة", next_step: "الخطوة التالية", back_to_now: "العودة إلى الخطوة الحالية",
+  now: "الآن", you: "أنت", coordinator_label: "المنسق", not_started: "لم تبدأ", restart: "إعادة المؤقت", session_done: "انتهت الجلسة",
+  handoff_last: "ملاحظات تسليم الأسبوع الماضي", first_week: "هذا هو الأسبوع الأول: لا توجد ملاحظات تسليم بعد.", lesson_notes: "ملاحظات الدرس",
+  lesson_notes_ph: "النقاط الأساسية من درس اليوم…", your_tasks_role: "مهامك", hand_in: "للتسليم هذا الأسبوع", other_pairs: "الثنائيات الأخرى",
+  review: "مراجعة", log_add: "إضافة", log_ph: "ماذا فعلت؟", between_title: "بين الجلسات", next_week: "الأسبوع القادم",
+  your_role_next: "دورك الأسبوع القادم", week_complete: "انتهت الجلسة. نلتقي الأسبوع القادم!", pick_name_first: "اختر اسمك لترى مهامك أولًا.",
+  tour_next: "التالي", tour_back: "رجوع", tour_start: "اختيار اسمي", step_of: "الخطوة {a} من {b}", week_progress: "هذا الأسبوع",
+});

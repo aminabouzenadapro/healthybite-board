@@ -4,110 +4,7 @@ const VIEWS = {};
 const opt = (v, label, cur) => `<option value="${esc(v)}" ${String(cur) === String(v) ? "selected" : ""}>${esc(label)}</option>`;
 const bar = (p, cls = "") => `<div class="meter ${cls}"><i style="width:${Math.min(100, p)}%"></i></div>`;
 
-/* ---------- Dashboard ---------- */
-VIEWS.dashboard = () => {
-  const n = currentWeek();
-  const w = weekPlan(n);
-  const me = ui.me;
-  const myRole = me ? roleOf(me, n) : "";
-  const partners = myRole ? holders(n, myRole).filter(p => p !== me) : [];
-  const myTasks = me ? weekCards(n).filter(c => c.status !== "done" && cardPeople(c).includes(me)) : [];
-
-  const cards = Store.all("card");
-  const doneCards = cards.filter(c => c.status === "done").length;
-  let slots = 0, approved = 0;
-  for (let k = 1; k <= 7; k++) { const s = weekDeliverableStats(k); slots += s.total; approved += s.approved; }
-  const sellers = Store.all("seller");
-  const pitched = sellers.filter(s => s.stage && s.stage !== "todo").length;
-  const posts = Store.all("post").length;
-  const queue = submissions().filter(d => d.status === "submitted").sort((a, b) => (b.at || 0) - (a.at || 0));
-
-  const wc = weekCards(n);
-  const wcDone = wc.filter(c => c.status === "done").length;
-  const chkDone = w.done.filter(d => checkDone(n, d.id)).length;
-  const ds = weekDeliverableStats(n);
-
-  const stat = (ic, label, value, total, p) => `
-    <div class="stat">
-      <div class="stat-top"><span class="stat-ic">${icon(ic)}</span><span>${esc(label)}</span></div>
-      <b>${value}${total !== undefined ? `<small> / ${total}</small>` : ""}</b>
-      ${p !== undefined ? bar(p) : ""}
-    </div>`;
-
-  const timeline = WEEKS.map(wk => {
-    const k = wk.n;
-    const kc = weekCards(k);
-    const tp = pct(kc.filter(c => c.status === "done").length, kc.length);
-    const s = weekDeliverableStats(k);
-    const dp = pct(s.approved, s.total);
-    return `<button class="tl-week ${k === n ? "now" : ""} phase-${wk.phase}" data-action="go-week" data-week="${k}">
-      <div class="tl-bars"><i class="tb-t" style="height:${Math.max(4, tp)}%"></i><i class="tb-d" style="height:${Math.max(4, dp)}%"></i></div>
-      <b>${k}</b><span>${esc(tx(weekPlan(k).focus))}</span></button>`;
-  }).join("");
-
-  return `
-  <section class="welcome">
-    <div>
-      <p class="muted">${esc(new Date().toLocaleDateString(locale(), { weekday: "long", day: "numeric", month: "long" }))}</p>
-      <h1>${esc(me ? t("hello", { name: me.split(" ")[0] }) : t("hello_anon"))}</h1>
-    </div>
-    <div class="btn-row">
-      <button class="btn" data-action="nav" data-view="session">${icon("timer")}${esc(t("start_session"))}</button>
-      <button class="btn primary" data-action="go-week" data-week="${n}">${esc(t("open_week"))}${icon("chevron", "flip")}</button>
-    </div>
-  </section>
-
-  <div class="dash-top">
-    <article class="week-hero phase-${w.phase}" data-action="go-week" data-week="${n}">
-      <div class="eyebrow">${esc(tx(PHASES[w.phase].t))} · ${esc(t("week_of_7", { n }))}${weekDate(n) ? " · " + esc(weekDate(n)) : ""}</div>
-      <h2>${esc(tx(w.focus))}</h2>
-      <p class="lesson-line">${icon("book")}<span>${esc(tx(w.lesson))}</span></p>
-      <div class="hero-metrics">
-        <div><span>${esc(t("tab_board"))}</span><b>${wcDone}/${wc.length}</b>${bar(pct(wcDone, wc.length), "light")}</div>
-        <div><span>${esc(t("checklist"))}</span><b>${chkDone}/${w.done.length}</b>${bar(pct(chkDone, w.done.length), "light")}</div>
-        <div><span>${esc(t("tab_deliverables"))}</span><b>${ds.approved}/${ds.total}</b>${bar(pct(ds.approved, ds.total), "light")}</div>
-      </div>
-    </article>
-
-    <article class="panel me-panel">
-      ${me ? `
-        <div class="me-role" style="--rc:${ROLES[myRole]?.color || "var(--green)"}">
-          <span class="role-badge">${icon(ROLE_ICON[myRole] || "users")}</span>
-          <div><span class="muted small">${esc(t("your_role"))}</span><b>${esc(tx(ROLES[myRole]?.t))}</b>
-            ${partners.length ? `<span class="muted small">${esc(t("with"))} ${partners.map(esc).join(", ")}</span>` : ""}</div>
-        </div>
-        <h3>${esc(t("your_tasks"))}</h3>
-        <ul class="task-list">${myTasks.map(taskRow).join("") || `<li class="empty">${esc(t("no_tasks_you"))}</li>`}</ul>`
-      : `<div class="empty-state">${icon("users", "xl")}<p>${esc(t("who_hint"))}</p><button class="btn primary" data-action="who">${esc(t("who_are_you"))}</button></div>`}
-    </article>
-  </div>
-
-  <div class="stats">
-    ${stat("listcheck", t("tasks_done"), doneCards, cards.length, pct(doneCards, cards.length))}
-    ${stat("inbox", t("deliv_approved"), approved, slots, pct(approved, slots))}
-    ${stat("users", t("pitched"), pitched, 15, pct(pitched, 15))}
-    ${stat("chart", t("posts_logged"), posts)}
-  </div>
-
-  <div class="dash-bottom">
-    <section class="panel">
-      <div class="panel-head"><h2>${esc(t("project_progress"))}</h2>
-        <div class="legend"><span><i class="tb-t"></i>${esc(t("tasks_done"))}</span><span><i class="tb-d"></i>${esc(t("deliv_approved"))}</span></div></div>
-      <div class="timeline">${timeline}</div>
-    </section>
-    <section class="panel">
-      <div class="panel-head"><h2>${esc(t("needs_review"))}</h2><span class="count">${queue.length}</span></div>
-      <ul class="review-list">${queue.slice(0, 6).map(d => `
-        <li data-action="open-deliv" data-id="${d.id}">
-          ${avatar(d.by || "?")}
-          <div><b>${esc(tx(d.title))}</b><span class="muted small">${esc(t("weekN", { n: d.week }))} · ${esc(d.by || "")} · ${esc(when(d.at))}</span></div>
-          ${icon("chevron", "flip")}
-        </li>`).join("") || `<li class="empty">${esc(t("nothing_to_review"))}</li>`}</ul>
-    </section>
-  </div>`;
-};
-
-/* One task line with a done tick (dashboard and week page). */
+/* One task line with a done tick (guide and week page). */
 function taskRow(c, opts = {}) {
   const subs = c.subtasks || [];
   const subDone = subs.filter(s => s.done).length;
@@ -152,7 +49,7 @@ VIEWS.week = () => {
 
   return `
   <section class="page-head phase-${w.phase}">
-    <div class="crumbs"><button class="link-btn" data-action="nav" data-view="dashboard">${esc(t("nav_dashboard"))}</button>${icon("chevron", "flip")}<span>${esc(t("weekN", { n }))}</span></div>
+    <div class="crumbs"><button class="link-btn" data-action="nav" data-view="weeks">${esc(t("nav_weeks"))}</button>${icon("chevron", "flip")}<span>${esc(t("weekN", { n }))}</span></div>
     <div class="page-head-row">
       <div>
         <div class="eyebrow">${esc(tx(PHASES[w.phase].t))}${weekDate(n) ? " · " + esc(weekDate(n)) : ""}</div>
@@ -166,14 +63,14 @@ VIEWS.week = () => {
       </div>
     </div>
     <div class="head-metrics">
-      <div><span>${icon("kanban")}${esc(t("tab_board"))}</span><b>${done}/${cards.length}</b>${bar(pct(done, cards.length))}</div>
+      <div><span>${icon("kanban")}${esc(t("nav_tasks"))}</span><b>${done}/${cards.length}</b>${bar(pct(done, cards.length))}</div>
       <div><span>${icon("listcheck")}${esc(t("checklist"))}</span><b>${chkDone}/${w.done.length}</b>${bar(pct(chkDone, w.done.length))}</div>
       <div><span>${icon("inbox")}${esc(t("deliv_approved"))}</span><b>${ds.approved}/${ds.total}</b>${bar(pct(ds.approved, ds.total))}</div>
     </div>
   </section>
 
   <section class="panel">
-    <div class="panel-head"><h2>${esc(t("team_this_week"))}</h2><button class="btn ghost sm" data-action="board-week" data-week="${n}">${icon("kanban")}${esc(t("tab_board"))}</button></div>
+    <div class="panel-head"><h2>${esc(t("team_this_week"))}</h2><button class="btn ghost sm" data-action="board-week" data-week="${n}">${icon("kanban")}${esc(t("nav_tasks"))}</button></div>
     <div class="role-cols">${Object.keys(ROLES).map(roleCol).join("")}
       ${others.length ? `<div class="role-col" style="--rc:var(--muted)"><div class="role-head"><span class="role-badge">${icon("listcheck")}</span><b>${esc(t("other_tasks"))}</b></div>
         <ul class="task-list">${others.map(c => taskRow(c, { del: true })).join("")}</ul></div>` : ""}
@@ -264,7 +161,8 @@ VIEWS.board = () => {
     <select data-ui="fWeek">${opt("current", t("current_week") + " (" + currentWeek() + ")", ui.fWeek)}${opt("0", t("all_weeks"), ui.fWeek)}${WEEKS.map(w => opt(w.n, t("weekN", { n: w.n }), ui.fWeek)).join("")}</select>
     <select data-ui="fRole">${opt("", t("all_roles"), ui.fRole)}${Object.keys(ROLES).map(r => opt(r, tx(ROLES[r].t), ui.fRole)).join("")}</select>
     <select data-ui="fPerson">${opt("", t("all_people"), ui.fPerson)}${members().map(m => opt(m, m, ui.fPerson)).join("")}</select>
-    ${ui.q ? `<button class="chip-btn" data-action="clear-q">${icon("search")}“${esc(ui.q)}” ${icon("x")}</button>` : ""}
+    <label class="search">${icon("search")}<input id="q" type="search" autocomplete="off" value="${esc(ui.q)}" placeholder="${esc(t("search"))}"></label>
+    <button class="btn primary push" data-action="new-card">${icon("plus")}${esc(t("new_task"))}</button>
   </div>`;
   const cols = COLUMNS.map(s => {
     const list = cards.filter(c => c.status === s);
@@ -303,7 +201,8 @@ function cardHTML(c) {
 
 /* ---------- Session ---------- */
 function timerState() {
-  return Store.get("timer") || { id: "timer", kind: "timer", running: false, startedAt: 0, base: 0 };
+  const s = Store.get("timer");
+  return s && (s.week || 0) === currentWeek() ? s : { id: "timer", kind: "timer", running: false, startedAt: 0, base: 0, week: currentWeek() };
 }
 function elapsedMs() {
   const s = timerState();
@@ -323,55 +222,6 @@ const clock = ms => {
   const s = Math.max(0, Math.round(ms / 1000));
   const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, sec = s % 60;
   return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(sec).padStart(2, "0");
-};
-
-VIEWS.session = () => {
-  const n = currentWeek();
-  const note = Store.get(`note-w${n}`) || {};
-  const prev = n > 1 ? Store.get(`note-w${n - 1}`) : null;
-  const logs = Store.all("log").sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  const s = timerState();
-  const field = (key, label) => `
-    <label class="field"><span>${esc(label)}</span>
-      <textarea rows="3" data-note="note-w${n}" data-key="${key}">${esc(note[key] || "")}</textarea></label>`;
-  return `
-  <section class="panel timer-panel">
-    <div class="panel-head">
-      <div><h2>${esc(t("timer_title"))} · ${esc(t("weekN", { n }))}</h2><p class="muted small">${esc(t("timer_shared"))}</p></div>
-      <div class="btn-row">
-        <button class="btn primary" data-action="timer-toggle">${s.running ? icon("pause") + esc(t("pause")) : icon("play") + esc(t("start"))}</button>
-        <button class="btn" data-action="timer-next">${icon("skip")}${esc(t("next_block"))}</button>
-        <button class="btn ghost" data-action="timer-reset">${icon("rotate")}${esc(t("reset"))}</button>
-      </div>
-    </div>
-    <div class="timer-body">
-      <div class="timer-now"><div id="t-block" class="t-block"></div><div id="t-clock" class="t-clock">0:00</div><div class="t-sub"><span id="t-total"></span></div></div>
-      <ol class="agenda">${AGENDA.map((b, i) => `<li id="ag-${i}" style="flex:${b.min}"><div class="ag-bar"><i></i></div><b>${esc(tx(b.t))}</b><span>${b.min} min</span></li>`).join("")}</ol>
-    </div>
-  </section>
-  <div class="two-col">
-    <section class="panel">
-      <h2>${esc(t("handoff"))} · ${esc(t("weekN", { n }))}</h2>
-      ${field("done", t("handoff_done"))}
-      ${field("left", t("handoff_left"))}
-      ${field("between", t("handoff_between"))}
-      <p class="hint">${esc(t("handoff_hint"))}</p>
-    </section>
-    <section class="panel">
-      <h2>${esc(t("handoff"))} · ${esc(n > 1 ? t("weekN", { n: n - 1 }) : t("none"))}</h2>
-      ${prev ? ["done", "left", "between"].map(k => `<div class="readout"><span>${esc(t("handoff_" + k))}</span><p>${esc(prev[k] || t("none"))}</p></div>`).join("")
-        : `<div class="empty">${esc(t("empty"))}</div>`}
-    </section>
-  </div>
-  <section class="panel">
-    <h2>${esc(t("between_log"))}</h2>
-    <p class="hint">${esc(t("between_hint"))}</p>
-    ${table(logs, [
-      { key: "date", label: t("date"), type: "date" },
-      { key: "who", label: t("who"), type: "select", options: members().map(m => [m, m]) },
-      { key: "what", label: t("what"), type: "text", wide: true },
-    ], "log")}
-  </section>`;
 };
 
 /* Generic inline table. Edits save on change; rows are items of `kind`. */

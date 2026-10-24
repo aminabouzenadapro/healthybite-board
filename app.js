@@ -1,16 +1,17 @@
 /* HealthyBite board — app shell, events and start-up. */
 
 const NAV = [
-  ["dashboard", "home", "nav_dashboard"],
-  ["board", "kanban", "tab_board"],
+  ["guide", "home", "nav_guide"],
+  ["weeks", "calendar", "nav_weeks"],
+  ["board", "kanban", "nav_tasks"],
   ["deliverables", "inbox", "tab_deliverables"],
-  ["session", "timer", "tab_session"],
 ];
-const NAV_TRACK = [
+const NAV_MORE = [
   ["posts", "chart", "tab_posts"],
   ["sellers", "users", "tab_sellers"],
   ["budget", "wallet", "tab_budget"],
   ["risks", "alert", "tab_risks"],
+  ["settings", "sliders", "tab_settings"],
 ];
 
 /* ---------- rendering ---------- */
@@ -23,13 +24,14 @@ function scheduleRender() {
 
 function render() {
   pendingRender = false;
-  if (!VIEWS[ui.view]) ui.view = "dashboard";
+  if (!VIEWS[ui.view]) ui.view = "guide";
   document.documentElement.lang = ui.lang;
   document.documentElement.dir = ui.lang === "ar" ? "rtl" : "ltr";
   renderSidebar();
   renderTopbar();
   $("#main").innerHTML = VIEWS[ui.view]();
-  if (ui.view === "session") tickTimer();
+  lastStep = ui.view === "guide" ? autoStep() : -1;
+  tickTimer();
 }
 
 function renderSidebar() {
@@ -40,21 +42,14 @@ function renderSidebar() {
       const q = submissions().filter(d => d.status === "submitted").length;
       if (q) badge = `<span class="nav-badge">${q}</span>`;
     }
-    return `<button class="nav-item ${ui.view === view ? "on" : ""}" data-action="nav" data-view="${view}">${icon(ic)}<span>${esc(t(label))}</span>${badge}</button>`;
+    if (view === "guide") badge = `<span class="nav-week-tag">${esc(t("weekN", { n: cw }))}</span>`;
+    const on = ui.view === view || (view === "weeks" && ui.view === "week");
+    return `<button class="nav-item ${on ? "on" : ""}" data-action="nav" data-view="${view}">${icon(ic)}<span>${esc(t(label))}</span>${badge}</button>`;
   };
-  const weeks = Object.values(PHASES).map(p => `
-    <div class="nav-phase">${esc(tx(p.t))}</div>
-    ${p.weeks.map(k => {
-      const kc = weekCards(k);
-      const prog = pct(kc.filter(c => c.status === "done").length, kc.length);
-      const on = ui.view === "week" && (ui.viewWeek || cw) === k;
-      return `<button class="nav-week ${on ? "on" : ""} ${k === cw ? "current" : ""}" data-action="go-week" data-week="${k}">
-        <span class="wk-num">${k}</span><span class="wk-name">${esc(tx(weekPlan(k).focus))}</span>
-        <span class="wk-ring" style="--p:${prog}"></span></button>`;
-    }).join("")}`).join("");
   const me = ui.me;
   const myRole = me ? roleOf(me, cw) : "";
   const status = { local: "sync_local", live: "sync_live", connecting: "sync_connecting", error: "sync_error" }[Store.mode];
+  const moreOpen = ui.moreOpen || NAV_MORE.some(x => x[0] === ui.view);
 
   $("#sidebar").innerHTML = `
     <div class="brand">
@@ -63,16 +58,16 @@ function renderSidebar() {
     </div>
     <button class="me-chip" data-action="who">
       ${me ? avatar(me) : `<span class="avatar ghost">${icon("users")}</span>`}
-      <span class="me-text"><b>${esc(me || t("not_set"))}</b><small>${me ? esc(t("weekN", { n: cw })) + " · " + esc(tx(ROLES[myRole]?.t)) : esc(t("who_are_you"))}</small></span>
+      <span class="me-text"><b>${esc(me || t("not_set"))}</b><small>${me ? esc(tx(ROLES[myRole]?.t)) : esc(t("who_are_you"))}</small></span>
       ${icon("chevron", "flip dim")}
     </button>
     <nav class="nav-group">${NAV.map(navItem).join("")}</nav>
-    <div class="nav-title">${esc(t("weeks"))}</div>
-    <nav class="nav-group weeks">${weeks}</nav>
-    <div class="nav-title">${esc(t("tracking"))}</div>
-    <nav class="nav-group">${NAV_TRACK.map(navItem).join("")}</nav>
+    <details class="nav-more" ${moreOpen ? "open" : ""}>
+      <summary>${icon("chevron", "flip")}<span>${esc(t("more"))}</span></summary>
+      <nav class="nav-group">${NAV_MORE.map(navItem).join("")}</nav>
+    </details>
     <div class="sidebar-foot">
-      ${navItem(["settings", "sliders", "tab_settings"])}
+      <button class="nav-item" data-action="tour">${icon("book")}<span>${esc(t("how_it_works"))}</span></button>
       <div class="sync sync-${Store.mode}" title="${esc(Store.mode === "error" ? Store.error : Store.team)}"><span class="dot"></span>${esc(t(status))}</div>
     </div>`;
 }
@@ -82,22 +77,20 @@ function renderTopbar() {
   if (ui.view === "week") {
     const n = ui.viewWeek || currentWeek();
     title = `${icon("calendar")}<span>${esc(t("weekN", { n }))}</span>`;
+  } else if (ui.view === "guide") {
+    title = `${icon("home")}<span>${esc(t("nav_guide"))} · ${esc(t("weekN", { n: currentWeek() }))}</span>`;
   } else {
-    const item = [...NAV, ...NAV_TRACK, ["settings", "sliders", "tab_settings"]].find(x => x[0] === ui.view);
+    const item = [...NAV, ...NAV_MORE].find(x => x[0] === ui.view);
     title = `${icon(item[1])}<span>${esc(t(item[2]))}</span>`;
   }
   $("#page-title").innerHTML = title;
-  const q = $("#q");
-  q.placeholder = t("search");
-  if (document.activeElement !== q) q.value = ui.q;
-  $("#new-task-label").textContent = t("new_task");
-  $("#rule").textContent = t("rule_banner");
   document.querySelectorAll("[data-lang]").forEach(b => b.classList.toggle("on", b.dataset.lang === ui.lang));
 }
 
 function go(view, extra = {}) {
   Object.assign(ui, { view }, extra);
   saveUI();
+  viewStep = null;
   document.body.classList.remove("nav-open");
   render();
   window.scrollTo(0, 0);
@@ -105,27 +98,21 @@ function go(view, extra = {}) {
 
 /* ---------- session timer ---------- */
 let lastBlock = -1;
+let lastStep = -1;
 function tickTimer() {
-  const el = $("#t-clock");
-  if (!el) return;
   const ms = elapsedMs();
   const b = blockAt(ms);
-  const done = b.i >= AGENDA.length;
-  el.textContent = done ? "0:00" : clock(b.start + b.len - ms);
-  $("#t-block").textContent = done ? t("col_done") : tx(AGENDA[b.i].t);
-  $("#t-total").textContent = `${t("total")} ${clock(Math.min(ms, TOTAL_MS))} / ${clock(TOTAL_MS)}`;
-  let acc = 0;
-  AGENDA.forEach((blk, i) => {
-    const len = blk.min * 60000;
-    const p = Math.min(1, Math.max(0, (ms - acc) / len));
-    const li = $("#ag-" + i);
-    li.querySelector("i").style.width = p * 100 + "%";
-    li.classList.toggle("now", i === b.i);
-    li.classList.toggle("past", p >= 1);
-    acc += len;
-  });
-  if (timerState().running && lastBlock !== -1 && b.i !== lastBlock) beep();
+  const running = timerState().running;
+  if (running && lastBlock !== -1 && b.i !== lastBlock) beep();
   lastBlock = b.i;
+  /* The guide follows the timer: when a block ends, show the next step. */
+  if (ui.view === "guide" && lastStep !== -1 && autoStep() !== lastStep) { lastStep = autoStep(); scheduleRender(); return; }
+  const el = $("#t-clock");
+  if (!el || b.i >= AGENDA.length) return;
+  el.textContent = clock(b.start + b.len - ms);
+  $("#t-block").textContent = tx(AGENDA[b.i].t) + (running ? "" : " · " + t("pause"));
+  $("#t-bar").style.width = Math.min(100, (ms - b.start) / b.len * 100) + "%";
+  $("#t-total").textContent = `${t("total")} ${clock(Math.min(ms, TOTAL_MS))} / ${clock(TOTAL_MS)}`;
 }
 function beep() {
   try {
@@ -140,6 +127,18 @@ function beep() {
   } catch {}
 }
 setInterval(tickTimer, 1000);
+
+/* Start, advance or reset the shared timer (always for the current week). */
+function startTimer() {
+  const s = timerState();
+  Store.put({ ...s, running: true, startedAt: Date.now(), week: currentWeek() });
+}
+function nextBlock() {
+  const s = timerState(), b = blockAt(elapsedMs());
+  const base = Math.min(TOTAL_MS, b.start + b.len);
+  lastBlock = -1;
+  Store.put({ ...s, base, startedAt: Date.now(), running: base < TOTAL_MS, week: currentWeek() });
+}
 
 /* ---------- events ---------- */
 function setPath(obj, path, value) {
@@ -210,20 +209,35 @@ document.addEventListener("click", e => {
       Store.put(base);
       break;
     }
-    case "timer-toggle": {
-      const s = timerState();
-      Store.put(s.running ? { ...s, running: false, base: elapsedMs() } : { ...s, running: true, startedAt: Date.now() });
+    case "guide-step": {
+      const s = Number(el.dataset.step);
+      viewStep = s === autoStep() ? null : s;
+      render();
       break;
     }
-    case "timer-next": {
-      const s = timerState(), b = blockAt(elapsedMs());
-      lastBlock = -1;
-      Store.put({ ...s, base: Math.min(TOTAL_MS, b.start + b.len), startedAt: Date.now() });
+    case "guide-now": viewStep = null; render(); break;
+    case "next-step":
+      viewStep = null;
+      if (autoStep() === 0) startTimer(); else nextBlock();
+      window.scrollTo(0, 0);
+      break;
+    case "timer-toggle": {
+      const s = timerState();
+      if (s.running) Store.put({ ...s, running: false, base: elapsedMs() });
+      else startTimer();
       break;
     }
     case "timer-reset":
+      if (!confirm(t("restart") + "?")) break;
       lastBlock = -1;
-      Store.put({ id: "timer", kind: "timer", running: false, startedAt: 0, base: 0 });
+      viewStep = null;
+      Store.put({ id: "timer", kind: "timer", running: false, startedAt: 0, base: 0, week: currentWeek() });
+      break;
+    case "tour": openTour(0); break;
+    case "tour-go": openTour(Number(el.dataset.step)); break;
+    case "tour-end":
+      ui.toured = true; saveUI();
+      if (ui.me) closeModal(); else openWho();
       break;
     case "fb-connect": {
       const cfg = parseFirebaseConfig($("#fb-config").value);
@@ -287,13 +301,33 @@ document.addEventListener("change", e => {
   }
 });
 
-/* Search (top bar) filters the board as you type. */
-$("#q").addEventListener("input", e => {
+/* Search on the Tasks page filters cards as you type. */
+document.addEventListener("input", e => {
+  if (e.target.id !== "q") return;
   ui.q = e.target.value;
   saveUI();
-  if (ui.view !== "board") { ui.view = "board"; saveUI(); }
+  const pos = e.target.selectionStart;
+  render();
+  const box = $("#q");
+  box.focus();
+  box.setSelectionRange(pos, pos);
+});
+
+/* Between-sessions log (guide, "After" step). */
+document.addEventListener("submit", e => {
+  const form = e.target.closest("[data-form=log]");
+  if (!form) return;
+  e.preventDefault();
+  const what = form.what.value.trim();
+  if (!what) return;
+  Store.put({ id: uid("l"), kind: "log", date: today(), who: form.who.value, what });
   render();
 });
+
+/* Remember whether "More" is open in the sidebar. */
+document.addEventListener("toggle", e => {
+  if (e.target.classList?.contains("nav-more")) { ui.moreOpen = e.target.open; saveUI(); }
+}, true);
 
 /* Quick add: type a task title and press Enter (week page and board columns). */
 document.addEventListener("keydown", e => {
@@ -387,7 +421,7 @@ document.querySelectorAll("[data-lang]").forEach(b => b.addEventListener("click"
 
 /* ---------- start ---------- */
 Store.onChange = scheduleRender;
-let askedWho = false;
 Store.init(seedData).then(() => {
-  if (!ui.me && !askedWho && Store.items.has("meta")) { askedWho = true; openWho(); }
+  if (!ui.toured) openTour(0);
+  else if (!ui.me && Store.items.has("meta")) openWho();
 });

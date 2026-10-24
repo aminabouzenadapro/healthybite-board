@@ -399,6 +399,26 @@ async function viewPhoto(photoId, thumb) {
   if (img && full) { img.src = full; img.classList.remove("loading"); }
 }
 
+/* ---------- welcome tour ---------- */
+function openTour(i) {
+  const s = TOUR[i];
+  const last = i === TOUR.length - 1;
+  openModal(`
+    <div class="tour">
+      <button type="button" class="icon-btn tour-close" data-action="tour-end" title="${esc(t("close"))}">${icon("x")}</button>
+      <div class="tour-art">${icon(s.icon)}</div>
+      <h2>${esc(tx(s.t))}</h2>
+      <p>${esc(tx(s.d))}</p>
+      <div class="tour-dots">${TOUR.map((_, k) => `<button class="${k === i ? "on" : ""}" data-action="tour-go" data-step="${k}" aria-label="${k + 1}"></button>`).join("")}</div>
+      <div class="tour-btns">
+        ${i > 0 ? `<button class="btn ghost" data-action="tour-go" data-step="${i - 1}">${esc(t("tour_back"))}</button>` : "<span></span>"}
+        ${last
+          ? `<button class="btn primary big" data-action="tour-end">${esc(ui.me ? t("close") : t("tour_start"))}${icon("chevron", "flip")}</button>`
+          : `<button class="btn primary big" data-action="tour-go" data-step="${i + 1}">${esc(t("tour_next"))}${icon("chevron", "flip")}</button>`}
+      </div>
+    </div>`, null, "narrow");
+}
+
 /* ---------- who are you ---------- */
 function openWho() {
   openModal(`

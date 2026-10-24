@@ -3,26 +3,34 @@
 A Trello-style board made for the HealthyBite team (7 students, 7 weeks, one 3-hour session a week).
 Plain HTML, CSS and JS: no build step, no install.
 
-## What's inside
-The left sidebar has the main pages, the 7 weeks (with a progress ring each) and the tracking sheets. On a phone it
-opens with the ☰ button.
+## How a week works
+Open **This week** at every session and follow the 6 steps:
 
+| Step | What the board shows |
+|---|---|
+| **Before** | Who does what this week and last week's handoff. Press **Start the session**. |
+| **Recap & handoff** (15 min) | Last week's handoff and the latest between-sessions work. |
+| **Lesson** (30 min) | The lesson, and a box for the team's notes. |
+| **Pair work** (1h45) | Your own tasks first, what to hand in this week (with **Submit**), then the other pairs' tasks. |
+| **Presentation** (30 min) | The deliverables to review (**Review** button for the Coordinator) and the "Done by the end" checklist. |
+| **After** | The handoff note for next week's team, the between-sessions log, and a preview of next week and your next role. |
+
+The timer is shared by everyone and moves the guide to the next step by itself. **Next step** skips ahead. Click any step
+to look at it, then **Back to the current step**.
+
+## Pages
 | Page | What it does |
 |---|---|
-| **Dashboard** | This week's focus and lesson, your role and your open tasks, project-wide progress (tasks done, deliverables approved, sellers pitched, posts logged), a 7-week progress chart, and the deliverables waiting for review. |
-| **Week 1–7** | Header with phase, date, focus and lesson. Tasks grouped by role with the people holding each role: tick to finish, type in "New task, then Enter" to add, bin icon to delete, click a task to open it. Then the "Done by the end" checklist and the deliverables to submit. **Edit week plan** changes the focus, lesson, checklist and expected deliverables. |
-| **Board** | To do / Doing / Review / Done for all tasks. Filter by week, role or person, search from the top bar, drag cards between columns, and add a card at the bottom of any column. Cards show their subtask progress. |
-| **Deliverables** | Every week's deliverables, filterable by week and status (Not submitted, Waiting for review, Needs changes, Approved). |
-| **Session** | Shared 3-hour agenda timer (15 min recap, 30 min lesson, 1h45 pair work, 30 min presentation), handoff notes for this week, last week's notes for the recap, and the between-sessions log for the Client & data pair. |
-| **Posts** | Post tracking (date, account, post, format, reach, likes, saves, messages) and baseline vs. current numbers for each client. |
-| **Sellers** | Pitch pipeline: To contact, Contacted, Replied, Meeting, Signed, Not now. |
-| **Budget** | Spending in DZD against a limit. |
-| **Risks** | Risk list, pre-filled with the usual ones. |
-| **Settings** | Member names, week 1 date, live sharing, backup and reset. |
+| **This week** | The guide above. |
+| **All weeks** | The 7 weeks at a glance with their progress. Click one to open it: tasks by role (tick, add with "New task, then Enter", delete), checklist, deliverables, and **Edit week plan** (focus, lesson, checklist, expected deliverables). |
+| **Tasks** | To do / Doing / Review / Done for all tasks, with filters, search, drag and drop, and quick add. |
+| **Deliverables** | Every week's deliverables, filterable by week and status. |
+| **More** | Posts (tracking and baseline vs. current), Sellers (pitch pipeline), Budget (DZD), Risks, Settings (names, week 1 date, sharing, backup, reset). |
 
-**Who are you?** The first time someone opens the board it asks for their name (saved on that phone or laptop only).
-Their name signs submissions, reviews and comments, and the Dashboard shows their own role and tasks. Change it by clicking
-the name at the top of the sidebar.
+**How it works** (bottom of the sidebar) replays the 4-slide welcome tour shown the first time someone opens the board.
+
+**Who are you?** After the tour, the board asks for your name (saved on that laptop only). It signs your submissions,
+reviews and comments, and the guide shows your own role and tasks first. Change it by clicking your name in the sidebar.
 
 **Tasks and subtasks.** Open any task to change its title, week, role, person, due date and description, add subtasks
 (type and press Enter, tick them as you go), and leave comments.
@@ -38,10 +46,10 @@ caption contains none of the flagged words (cure, détox, diabète, تخسيس, 
 **Roles rotate on their own.** Put the 7 names in Settings in any order. Each week everyone moves one seat, so over the
 7 weeks each person is Coordinator once and works in every pair. The table in Settings shows the whole rotation.
 
-Languages: English, French and Arabic (right-to-left), switched in the top bar.
+Languages: English, French and Arabic (right-to-left), switched in the top bar (EN · FR · ع).
 
 ## First steps
-1. Open **Settings**: type the 7 names, and set the date of the week 1 session (the current week then follows the calendar).
+1. Open **More → Settings**: type the 7 names, and set the date of the week 1 session (the current week then follows the calendar).
 2. Turn on live sharing (below) so all 7 of you see the same board.
 3. Put it online (below) and send the link on the team WhatsApp group.
 
@@ -108,5 +116,5 @@ checklist and the starting risks are in `data.js`. Edited texts are kept as type
 | `data.js` | The 7-week plan, deliverables, risks and all interface texts (EN/FR/AR). |
 | `config.js` | Firebase settings and team space name. |
 | `store.js` | Saving: Firebase (shared) or this browser only. |
-| `ui.js`, `views.js`, `modals.js`, `app.js` | The app: helpers, pages, dialogs, navigation. |
+| `ui.js`, `views.js`, `guide.js`, `modals.js`, `app.js` | The app: helpers, pages, the weekly guide, dialogs, navigation. |
 | `styles.css` | Design. Colors are at the top. |

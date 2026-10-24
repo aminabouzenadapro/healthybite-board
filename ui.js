@@ -7,10 +7,11 @@ const DAY = 86400000;
 const MAX_PHOTOS = 6;
 
 const ui = Object.assign(
-  { lang: "en", view: "dashboard", viewWeek: 0, weekOverride: 0, fWeek: "current", fRole: "", fPerson: "", q: "", me: "", dWeek: "0", dStatus: "" },
+  { lang: "en", view: "guide", viewWeek: 0, weekOverride: 0, fWeek: "current", fRole: "", fPerson: "", q: "", me: "", dWeek: "0", dStatus: "" },
   readJSON(UI_KEY)
 );
-if (ui.tab && !ui.view) ui.view = ui.tab;
+if (["dashboard", "session"].includes(ui.view)) ui.view = "guide";
+if (ui.toured === undefined) ui.toured = false;
 
 function readJSON(key) {
   try { return JSON.parse(localStorage.getItem(key) || "{}") || {}; } catch { return {}; }
