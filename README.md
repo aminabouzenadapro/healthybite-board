@@ -4,16 +4,33 @@ A Trello-style board made for the HealthyBite team (7 students, 7 weeks, one 3-h
 Plain HTML, CSS and JS: no build step, no install.
 
 ## What's inside
-| Tab | What it does |
+The left sidebar has the main pages, the 7 weeks (with a progress ring each) and the tracking sheets. On a phone it
+opens with the ☰ button.
+
+| Page | What it does |
 |---|---|
-| **This week** | Phase, focus and lesson of the week, who holds which role, tasks per role, the "Done by the end" checklist. Click a week number to look at another week. |
-| **Board** | To do / Doing / Review / Done. The whole 7-week plan is already loaded as cards. Filter by week, role or person. Drag cards between columns, or open a card and change its status. |
+| **Dashboard** | This week's focus and lesson, your role and your open tasks, project-wide progress (tasks done, deliverables approved, sellers pitched, posts logged), a 7-week progress chart, and the deliverables waiting for review. |
+| **Week 1–7** | Header with phase, date, focus and lesson. Tasks grouped by role with the people holding each role: tick to finish, type in "New task, then Enter" to add, bin icon to delete, click a task to open it. Then the "Done by the end" checklist and the deliverables to submit. **Edit week plan** changes the focus, lesson, checklist and expected deliverables. |
+| **Board** | To do / Doing / Review / Done for all tasks. Filter by week, role or person, search from the top bar, drag cards between columns, and add a card at the bottom of any column. Cards show their subtask progress. |
+| **Deliverables** | Every week's deliverables, filterable by week and status (Not submitted, Waiting for review, Needs changes, Approved). |
 | **Session** | Shared 3-hour agenda timer (15 min recap, 30 min lesson, 1h45 pair work, 30 min presentation), handoff notes for this week, last week's notes for the recap, and the between-sessions log for the Client & data pair. |
 | **Posts** | Post tracking (date, account, post, format, reach, likes, saves, messages) and baseline vs. current numbers for each client. |
 | **Sellers** | Pitch pipeline: To contact, Contacted, Replied, Meeting, Signed, Not now. |
 | **Budget** | Spending in DZD against a limit. |
 | **Risks** | Risk list, pre-filled with the usual ones. |
 | **Settings** | Member names, week 1 date, live sharing, backup and reset. |
+
+**Who are you?** The first time someone opens the board it asks for their name (saved on that phone or laptop only).
+Their name signs submissions, reviews and comments, and the Dashboard shows their own role and tasks. Change it by clicking
+the name at the top of the sidebar.
+
+**Tasks and subtasks.** Open any task to change its title, week, role, person, due date and description, add subtasks
+(type and press Enter, tick them as you go), and leave comments.
+
+**Deliverables.** Click a deliverable, add links (Canva, Google Drive, Instagram, the website…), up to 6 photos and a note,
+then **Submit**. Photos are shrunk automatically and stored in Firebase. Put PDFs and videos in Google Drive and paste the
+link. The week's Coordinator opens it and clicks **Approve** or **Ask for changes** with a comment. The team fixes it and
+uses **Edit & resubmit**. Every step is kept in the history.
 
 **No health claims.** A card with the type *Content (caption)* cannot go to Done until all five review checks are ticked and the
 caption contains none of the flagged words (cure, détox, diabète, تخسيس, …). Edit the list in `data.js` (`CLAIM_WORDS`).
@@ -65,7 +82,7 @@ than 7 people need.
 
 ## Put it online (GitHub Pages)
 1. Create a new public repository, for example `healthybite-board`, on <https://github.com/aminabouzenadapro>.
-2. Upload every file of this folder (`index.html`, `styles.css`, `app.js`, `data.js`, `store.js`, `config.js`).
+2. Upload every file of this folder (`index.html`, `styles.css`, the `.js` files).
 3. **Settings → Pages → Branch: main / root → Save.**
 4. After a minute the board is at `https://aminabouzenadapro.github.io/healthybite-board/`. Share that link.
 
@@ -81,6 +98,15 @@ then open <http://localhost:8010>.
 (it replaces the current board). **Reset to the HealthyBite plan** starts again from the original plan.
 
 ## Change the plan
-Everything about the 7 weeks (focus, lesson, tasks per role, Done checklist), the agenda timings, the review checklist and the
-starting risks is in `data.js`, in English, French and Arabic. Cards are created from it the first time the board opens.
-Changes in `data.js` after that only show on cards if you use **Reset to the HealthyBite plan**.
+Most changes are done in the app: **Edit week plan** on each week page (focus, lesson, checklist, deliverables), and adding,
+editing or deleting tasks directly. The starting plan (texts in English, French and Arabic), the agenda timings, the review
+checklist and the starting risks are in `data.js`. Edited texts are kept as typed, in one language.
+
+## Files
+| File | What it is |
+|---|---|
+| `data.js` | The 7-week plan, deliverables, risks and all interface texts (EN/FR/AR). |
+| `config.js` | Firebase settings and team space name. |
+| `store.js` | Saving: Firebase (shared) or this browser only. |
+| `ui.js`, `views.js`, `modals.js`, `app.js` | The app: helpers, pages, dialogs, navigation. |
+| `styles.css` | Design. Colors are at the top. |

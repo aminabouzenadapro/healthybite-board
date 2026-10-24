@@ -4,36 +4,47 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>HealthyBite Board</title>
-  <meta name="description" content="Team board for the HealthyBite student marketing agency: 7-week plan, rotating roles, kanban, session timer and client tracking.">
+  <meta name="description" content="Team board for the HealthyBite student marketing agency: 7-week plan, rotating roles, tasks, deliverables and client tracking.">
+  <meta name="theme-color" content="#2f7d4f">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='34' r='24' fill='%232f7d4f'/><path d='M32 10c6-8 16-6 16-6s-2 10-12 12' fill='%23e9a23b'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="35" r="23" fill="var(--green)"/><path d="M32 12c5-8 16-7 16-7s-1 11-12 12z" fill="var(--saffron)"/><path d="M22 36c4 6 16 6 20 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
-      <div><b>HealthyBite</b><span id="tagline">Team board</span></div>
+  <div class="app">
+    <aside id="sidebar" class="sidebar"></aside>
+    <div class="scrim" data-action="close-nav"></div>
+    <div class="content">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" data-action="toggle-nav" aria-label="Menu"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+        <h1 id="page-title" class="page-title"></h1>
+        <label class="search">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="q" type="search" autocomplete="off">
+        </label>
+        <div class="langs" role="group" aria-label="Language">
+          <button data-lang="en">EN</button><button data-lang="fr">FR</button><button data-lang="ar">ع</button>
+        </div>
+        <button class="btn primary new-btn" data-action="new-card">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><span id="new-task-label">New task</span>
+        </button>
+      </header>
+      <div class="rule-banner"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg><span id="rule"></span></div>
+      <main id="main" class="main"></main>
     </div>
-    <div class="top-controls">
-      <select id="week-select" aria-label="Week"></select>
-      <div class="langs" role="group" aria-label="Language">
-        <button data-lang="en">EN</button><button data-lang="fr">FR</button><button data-lang="ar">ع</button>
-      </div>
-      <span id="sync" class="sync"></span>
-    </div>
-  </header>
-  <nav id="nav" class="nav"></nav>
-  <div class="rule-banner">🛡️ <span id="rule"></span></div>
-  <main id="main" class="main"></main>
+  </div>
   <div id="modal" class="modal" hidden></div>
+  <div id="lightbox" class="lightbox" hidden></div>
   <div id="toasts" class="toasts" aria-live="polite"></div>
 
   <script src="config.js"></script>
   <script src="data.js"></script>
   <script src="store.js"></script>
+  <script src="ui.js"></script>
+  <script src="views.js"></script>
+  <script src="modals.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

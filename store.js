@@ -6,6 +6,7 @@
 const FIREBASE_SDK = window.HB_FIREBASE_SDK || "https://www.gstatic.com/firebasejs/10.12.2/";
 const LOCAL_KEY = "hb-board-v1";
 const CONN_KEY = "hb-connection";
+const PHOTO_KEY = "hb-photos";
 
 const Store = {
   items: new Map(),
@@ -89,7 +90,9 @@ const Store = {
 
     await new Promise((resolve, reject) => {
       let first = true, checkedSeed = false;
-      api.onSnapshot(col, { includeMetadataChanges: true }, snap => {
+      /* Photos are large, so they are left out here and loaded one by one with getPhoto(). */
+      const everythingButPhotos = api.query(col, api.where("kind", "!=", "photo"));
+      api.onSnapshot(everythingButPhotos, { includeMetadataChanges: true }, snap => {
         snap.docChanges().forEach(ch => {
           if (ch.type === "removed") this.items.delete(ch.doc.id);
           else this.items.set(ch.doc.id, ch.doc.data());
@@ -158,9 +161,61 @@ const Store = {
     this.onChange();
   },
 
+  /* Photos (compressed JPEG data URLs) live in their own documents, kind "photo". */
+  _photoCache: new Map(),
+  _localPhotos() {
+    try { return JSON.parse(localStorage.getItem(PHOTO_KEY) || "{}"); } catch { return {}; }
+  },
+  async getPhoto(id) {
+    if (this._photoCache.has(id)) return this._photoCache.get(id);
+    let data = null;
+    if (this.mode === "local" || !this._fs) data = this._localPhotos()[id] || null;
+    else {
+      const { api, col } = this._fs;
+      const snap = await api.getDoc(api.doc(col, id));
+      data = snap.exists() ? snap.data().data : null;
+    }
+    if (data) this._photoCache.set(id, data);
+    return data;
+  },
+  async putPhoto(id, data) {
+    if (this.mode === "local" || !this._fs) {
+      const all = this._localPhotos();
+      all[id] = data;
+      localStorage.setItem(PHOTO_KEY, JSON.stringify(all)); // throws when the browser is full
+    } else {
+      const { api, col } = this._fs;
+      await api.setDoc(api.doc(col, id), { id, kind: "photo", data, updated: Date.now() });
+    }
+    this._photoCache.set(id, data);
+  },
+  delPhoto(id) {
+    this._photoCache.delete(id);
+    if (this.mode === "local" || !this._fs) {
+      const all = this._localPhotos();
+      delete all[id];
+      try { localStorage.setItem(PHOTO_KEY, JSON.stringify(all)); } catch {}
+    } else {
+      const { api, col } = this._fs;
+      api.deleteDoc(api.doc(col, id)).catch(e => this._fail(e));
+    }
+  },
+  async _clearPhotos() {
+    this._photoCache.clear();
+    if (this.mode === "local" || !this._fs) { try { localStorage.removeItem(PHOTO_KEY); } catch {} return; }
+    const { db, api, col } = this._fs;
+    const snap = await api.getDocs(api.query(col, api.where("kind", "==", "photo")));
+    for (let i = 0; i < snap.docs.length; i += 400) {
+      const batch = api.writeBatch(db);
+      snap.docs.slice(i, i + 400).forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
+  },
+
   /* Replace everything (reset / import). */
   replaceAll(list) {
     const old = [...this.items.keys()];
+    this._clearPhotos().catch(e => this._fail(e));
     if (this.mode === "local") {
       this.items.clear();
       list.forEach(it => this.items.set(it.id, it));

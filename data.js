@@ -369,3 +369,104 @@ const I18N = {
     of: "من", none: "—",
   },
 };
+
+/* What each week hands in. Teams submit links and photos; the week's Coordinator approves.
+   Editable from the app (Week page → Edit week plan). */
+const DELIVERABLES = {
+  1: [
+    { en: "Practice page link (Instagram / Facebook)", fr: "Lien de la page d'entraînement (Instagram / Facebook)", ar: "رابط صفحة التدريب (إنستغرام / فيسبوك)" },
+    { en: "20 product photos (Drive folder + best shots)", fr: "20 photos produits (dossier Drive + meilleures photos)", ar: "20 صورة منتجات (مجلد درايف + أفضل الصور)" },
+    { en: "Canva kit v1 (3 templates)", fr: "Kit Canva v1 (3 modèles)", ar: "مجموعة كانفا الأولى (3 قوالب)" },
+    { en: "List of 15 sellers", fr: "Liste de 15 vendeurs", ar: "قائمة 15 بائعًا" },
+  ],
+  2: [
+    { en: "Showcase website link", fr: "Lien du site vitrine", ar: "رابط موقع العرض" },
+    { en: "Final Canva kit", fr: "Kit Canva final", ar: "مجموعة كانفا النهائية" },
+    { en: "6 practice posts and 2 Reels (links)", fr: "6 posts et 2 Reels d'entraînement (liens)", ar: "6 منشورات و2 ريلز تدريبية (روابط)" },
+    { en: "Pitch message and seller replies", fr: "Message de démarchage et réponses des vendeurs", ar: "رسالة العرض وردود البائعين" },
+  ],
+  3: [
+    { en: "Client agreement (WhatsApp screenshot)", fr: "Accord du client (capture WhatsApp)", ar: "موافقة العميل (لقطة شاشة واتساب)" },
+    { en: "Baseline numbers (Insights screenshots)", fr: "Chiffres de départ (captures des statistiques)", ar: "أرقام البداية (لقطات الإحصائيات)" },
+    { en: "3-week content calendar", fr: "Calendrier de contenu sur 3 semaines", ar: "رزنامة المحتوى لـ3 أسابيع" },
+    { en: "Client product photos", fr: "Photos des produits du client", ar: "صور منتجات العميل" },
+  ],
+  4: [
+    { en: "Batch 1 designs", fr: "Visuels du lot 1", ar: "تصاميم الدفعة الأولى" },
+    { en: "Batch 1 captions (checked: no health claims)", fr: "Légendes du lot 1 (contrôlées : sans allégations santé)", ar: "تعليقات الدفعة الأولى (بدون ادعاءات صحية)" },
+    { en: "Client approval (screenshot)", fr: "Validation du client (capture)", ar: "موافقة العميل (لقطة شاشة)" },
+    { en: "Scheduled posts in Meta Business Suite (screenshot)", fr: "Posts programmés dans Meta Business Suite (capture)", ar: "المنشورات المجدولة في Meta Business Suite (لقطة شاشة)" },
+  ],
+  5: [
+    { en: "Catalog page link", fr: "Lien de la page catalogue", ar: "رابط صفحة الكتالوج" },
+    { en: "Batch 2 designs and captions", fr: "Visuels et légendes du lot 2", ar: "تصاميم وتعليقات الدفعة الثانية" },
+    { en: "Batch 1 results (Insights screenshots)", fr: "Résultats du lot 1 (captures des statistiques)", ar: "نتائج الدفعة الأولى (لقطات الإحصائيات)" },
+  ],
+  6: [
+    { en: "Baseline vs. current comparison", fr: "Comparaison départ vs. actuel", ar: "مقارنة البداية بالحالي" },
+    { en: "Case study draft", fr: "Brouillon de l'étude de cas", ar: "مسودة دراسة الحالة" },
+  ],
+  7: [
+    { en: "Final case study", fr: "Étude de cas finale", ar: "دراسة الحالة النهائية" },
+    { en: "Lessons-learned report", fr: "Rapport des leçons apprises", ar: "تقرير الدروس المستفادة" },
+    { en: "Final presentation slides", fr: "Slides de la présentation finale", ar: "شرائح العرض النهائي" },
+  ],
+};
+
+Object.assign(I18N.en, {
+  nav_dashboard: "Dashboard", tab_deliverables: "Deliverables", weeks: "Weeks", workspace: "Workspace", tracking: "Tracking",
+  hello: "Hi, {name}", hello_anon: "Welcome to HealthyBite", week_of_7: "Week {n} of 7",
+  your_role: "Your role this week", with: "with", your_tasks: "Your tasks this week", no_tasks_you: "No open tasks for you this week.",
+  needs_review: "Waiting for review", nothing_to_review: "Nothing waiting for review.", project_progress: "Project progress",
+  tasks_done: "Tasks done", deliv_approved: "Deliverables approved", posts_logged: "Posts logged", open_week: "Open week",
+  start_session: "Start session", who_are_you: "Who are you?", who_hint: "Pick your name so your submissions, reviews and comments are signed. Saved on this device only.",
+  switch_user: "Change", not_set: "Pick your name", edit_plan: "Edit week plan", plan_saved: "Week plan saved.",
+  add_item: "Add", add_task: "Add a task", add_task_ph: "New task, then Enter", subtasks: "Subtasks", add_subtask: "Add a subtask, then Enter",
+  checklist: "Checklist", expected_deliverables: "Deliverables to submit", deliv_missing: "Not submitted", deliv_submitted: "Waiting for review",
+  deliv_approved_s: "Approved", deliv_changes: "Needs changes", submit: "Submit", resubmit: "Edit & resubmit", approve: "Approve",
+  request_changes: "Ask for changes", review_comment: "Comment for the team (optional)", links: "Links", link_ph: "https://… (Canva, Drive, Instagram…)",
+  add_link: "Add link", photos: "Photos", add_photos: "Add photos", photos_hint: "Up to 6 photos, compressed automatically. For PDFs or videos, paste a Google Drive link.",
+  submitted_by: "Submitted by", reviewer: "Reviewer", coordinator_reviews: "Week {n} Coordinator reviews: {name}", other_deliverable: "Other deliverable",
+  deliv_title: "Deliverable", all_status: "All statuses", history: "History", ev_submitted: "submitted", ev_approved: "approved", ev_changes: "asked for changes",
+  compressing: "Compressing photos…", photo_limit: "Up to 6 photos per deliverable.", photo_failed: "This photo could not be saved.",
+  focus_ph: "What this week is about", lesson_ph: "Lesson of the session", other_tasks: "Other tasks",
+  open: "Open", menu: "Menu", new_task: "New task", saving: "Saving…",
+});
+Object.assign(I18N.fr, {
+  nav_dashboard: "Tableau de bord", tab_deliverables: "Livrables", weeks: "Semaines", workspace: "Espace de travail", tracking: "Suivi",
+  hello: "Salut, {name}", hello_anon: "Bienvenue sur HealthyBite", week_of_7: "Semaine {n} sur 7",
+  your_role: "Ton rôle cette semaine", with: "avec", your_tasks: "Tes tâches cette semaine", no_tasks_you: "Aucune tâche ouverte pour toi cette semaine.",
+  needs_review: "En attente de validation", nothing_to_review: "Rien en attente de validation.", project_progress: "Avancement du projet",
+  tasks_done: "Tâches terminées", deliv_approved: "Livrables validés", posts_logged: "Posts suivis", open_week: "Ouvrir la semaine",
+  start_session: "Lancer la séance", who_are_you: "Qui es-tu ?", who_hint: "Choisis ton nom pour signer tes livrables, validations et commentaires. Enregistré sur cet appareil uniquement.",
+  switch_user: "Changer", not_set: "Choisis ton nom", edit_plan: "Modifier le plan", plan_saved: "Plan de la semaine enregistré.",
+  add_item: "Ajouter", add_task: "Ajouter une tâche", add_task_ph: "Nouvelle tâche, puis Entrée", subtasks: "Sous-tâches", add_subtask: "Ajouter une sous-tâche, puis Entrée",
+  checklist: "Checklist", expected_deliverables: "Livrables à rendre", deliv_missing: "Non rendu", deliv_submitted: "En attente de validation",
+  deliv_approved_s: "Validé", deliv_changes: "À corriger", submit: "Rendre", resubmit: "Modifier et rendre", approve: "Valider",
+  request_changes: "Demander des corrections", review_comment: "Commentaire pour l'équipe (facultatif)", links: "Liens", link_ph: "https://… (Canva, Drive, Instagram…)",
+  add_link: "Ajouter un lien", photos: "Photos", add_photos: "Ajouter des photos", photos_hint: "Jusqu'à 6 photos, compressées automatiquement. Pour un PDF ou une vidéo, colle un lien Google Drive.",
+  submitted_by: "Rendu par", reviewer: "Validé par", coordinator_reviews: "Coordination de la semaine {n} : {name}", other_deliverable: "Autre livrable",
+  deliv_title: "Livrable", all_status: "Tous les statuts", history: "Historique", ev_submitted: "a rendu", ev_approved: "a validé", ev_changes: "a demandé des corrections",
+  compressing: "Compression des photos…", photo_limit: "Jusqu'à 6 photos par livrable.", photo_failed: "Cette photo n'a pas pu être enregistrée.",
+  focus_ph: "Le sujet de la semaine", lesson_ph: "Leçon de la séance", other_tasks: "Autres tâches",
+  open: "Ouvrir", menu: "Menu", new_task: "Nouvelle tâche", saving: "Enregistrement…",
+});
+Object.assign(I18N.ar, {
+  nav_dashboard: "الرئيسية", tab_deliverables: "التسليمات", weeks: "الأسابيع", workspace: "مساحة العمل", tracking: "المتابعة",
+  hello: "مرحبًا، {name}", hello_anon: "مرحبًا بك في HealthyBite", week_of_7: "الأسبوع {n} من 7",
+  your_role: "دورك هذا الأسبوع", with: "مع", your_tasks: "مهامك هذا الأسبوع", no_tasks_you: "لا مهام مفتوحة لك هذا الأسبوع.",
+  needs_review: "بانتظار المراجعة", nothing_to_review: "لا شيء بانتظار المراجعة.", project_progress: "تقدم المشروع",
+  tasks_done: "المهام المنجزة", deliv_approved: "التسليمات المعتمدة", posts_logged: "المنشورات المسجلة", open_week: "فتح الأسبوع",
+  start_session: "بدء الجلسة", who_are_you: "من أنت؟", who_hint: "اختر اسمك لتوقيع تسليماتك ومراجعاتك وتعليقاتك. يُحفظ على هذا الجهاز فقط.",
+  switch_user: "تغيير", not_set: "اختر اسمك", edit_plan: "تعديل خطة الأسبوع", plan_saved: "تم حفظ خطة الأسبوع.",
+  add_item: "إضافة", add_task: "إضافة مهمة", add_task_ph: "مهمة جديدة ثم Enter", subtasks: "مهام فرعية", add_subtask: "أضف مهمة فرعية ثم Enter",
+  checklist: "قائمة التحقق", expected_deliverables: "التسليمات المطلوبة", deliv_missing: "لم يُسلَّم", deliv_submitted: "بانتظار المراجعة",
+  deliv_approved_s: "معتمد", deliv_changes: "يحتاج تعديلات", submit: "تسليم", resubmit: "تعديل وإعادة التسليم", approve: "اعتماد",
+  request_changes: "طلب تعديلات", review_comment: "تعليق للفريق (اختياري)", links: "الروابط", link_ph: "https://… (كانفا، درايف، إنستغرام…)",
+  add_link: "إضافة رابط", photos: "الصور", add_photos: "إضافة صور", photos_hint: "حتى 6 صور، تُضغط تلقائيًا. لملفات PDF أو الفيديو، ألصق رابط Google Drive.",
+  submitted_by: "سلّمه", reviewer: "المراجِع", coordinator_reviews: "منسق الأسبوع {n} يراجع: {name}", other_deliverable: "تسليم آخر",
+  deliv_title: "التسليم", all_status: "كل الحالات", history: "السجل", ev_submitted: "سلّم", ev_approved: "اعتمد", ev_changes: "طلب تعديلات",
+  compressing: "جارٍ ضغط الصور…", photo_limit: "حتى 6 صور لكل تسليم.", photo_failed: "تعذّر حفظ هذه الصورة.",
+  focus_ph: "موضوع هذا الأسبوع", lesson_ph: "درس الجلسة", other_tasks: "مهام أخرى",
+  open: "فتح", menu: "القائمة", new_task: "مهمة جديدة", saving: "جارٍ الحفظ…",
+});
