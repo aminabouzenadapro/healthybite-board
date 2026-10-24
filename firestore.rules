@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only the HealthyBite team space can be read or written.
+    // Must match "team" in config.js.
+    match /teams/{team}/items/{item} {
+      allow read, write: if team == "healthybite-q7m4x2";
+    }
+  }
+}
